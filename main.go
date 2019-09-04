@@ -8,6 +8,10 @@ import (
 	"os"
 )
 
+const (
+	defaultConfigFile = ".arse.yml"
+)
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "arse"
@@ -24,7 +28,9 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				configFile := c.String("config")
-				fmt.Printf("running with file: %s\n", configFile)
+				if len(configFile) == 0 {
+					configFile = defaultConfigFile
+				}
 				run(configFile)
 				return nil
 			},
@@ -34,7 +40,6 @@ func main() {
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func run(filename string) {

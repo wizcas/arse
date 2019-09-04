@@ -1,0 +1,11 @@
+actions:
+  hello:
+    description: "Just a warm greeting 😀"
+    script: |
+      echo "Hello Arse!"
+      echo "⌚ $(date)"
+
+  os:
+    description: "Show your OS version"
+    script: |
+      cat /proc/version

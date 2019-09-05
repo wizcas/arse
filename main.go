@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
-	"github.com/wizcas/arse/parser"
 	"log"
 	"os"
+
+	"github.com/wizcas/arse/loaders/yaml"
+
+	"github.com/urfave/cli"
 )
 
 const (
@@ -44,7 +46,7 @@ func main() {
 
 func run(filename string) {
 	println("Hello my arse!")
-	data, err := parser.Load(filename)
+	data, err := yaml.Load(filename)
 	if err != nil {
 		log.Fatal(err)
 	}

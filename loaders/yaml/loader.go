@@ -1,14 +1,16 @@
-package parser
+package yaml
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"sort"
 	"strings"
+
+	"github.com/wizcas/arse/data"
+	y "gopkg.in/yaml.v2"
 )
 
-func Load(filepath string) (*ArseFile, error) {
+// Load a YAML file from <filepath> into a parsed Arse configuration
+func Load(filepath string) (*data.ArseFile, error) {
 	fmt.Printf("Loading file: %s...\n", filepath)
 	content, err := ioutil.ReadFile(filepath)
 	if err != nil {
@@ -16,7 +18,7 @@ func Load(filepath string) (*ArseFile, error) {
 	}
 
 	filemap := make(map[string]interface{})
-	if err = yaml.Unmarshal(content, &filemap); err != nil {
+	if err = y.Unmarshal(content, &filemap); err != nil {
 		return nil, err
 	}
 
@@ -25,17 +27,18 @@ func Load(filepath string) (*ArseFile, error) {
 		return nil, err
 	}
 
-	return &ArseFile{
-		actions,
+	return &data.ArseFile{
+		Actions: actions,
 	}, nil
 }
 
-func loadActions(filemap map[string]interface{}) (ActionCollection, error) {
+func loadActions(filemap map[string]interface{}) (data.ActionMap, error) {
 	mapActions := asYm(filemap["actions"])
 	if mapActions == nil {
-		return nil, fmt.Errorf("actions not found\n")
+		return nil, fmt.Errorf("actions not found")
 	}
-	actionList := sortableActions{}
+
+	collection := make(data.ActionMap)
 	for k, v := range mapActions {
 		name := k.(string)
 		mapProps := asYm(v)
@@ -44,17 +47,11 @@ func loadActions(filemap map[string]interface{}) (ActionCollection, error) {
 			continue
 		}
 
-		actionList = append(actionList, &Action{
+		collection[strings.ToLower(name)] = &data.Action{
 			Name:        name,
 			Description: mapProps.readString("description", ""),
 			Script:      mapProps.readString("script", ""),
-		})
-	}
-
-	sort.Sort(actionList)
-	collection := make(ActionCollection)
-	for _, action := range actionList {
-		collection[strings.ToLower(action.Name)] = action
+		}
 	}
 	return collection, nil
 }

@@ -1,4 +1,4 @@
-package parser
+package yaml
 
 type ym map[interface{}]interface{}
 

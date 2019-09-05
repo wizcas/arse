@@ -2,7 +2,11 @@ package data
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"strings"
+
+	"github.com/google/shlex"
 )
 
 // Action is a set of user defined commands run by Arse
@@ -10,6 +14,19 @@ type Action struct {
 	Name        string
 	Description string
 	Script      string
+}
+
+// Run the scripts defined in this action
+func (a Action) Run() error {
+	args, err := shlex.Split(a.Script)
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 func (a Action) String() string {

@@ -25,3 +25,12 @@ func (f ArseFile) String() string {
 
 ////////////////////////////////////////`, len(f.Actions), strings.Join(arrActionString, "\n"))
 }
+
+// Action finder by case-insensitive name. Returns nil if not found.
+func (f *ArseFile) Action(name string) *Action {
+	action, ok := f.Actions[name]
+	if !ok {
+		return nil
+	}
+	return action
+}

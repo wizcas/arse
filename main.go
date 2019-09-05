@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -67,10 +68,26 @@ func run(c *cli.Context) error {
 		configFile = defaultConfigFile
 	}
 	println("Hello my arse!")
-	data, err := loader.SmartLoad(configFile)
+	af, err := loader.SmartLoad(configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Loaded ArseFile:\n%v\n", data)
+	fmt.Printf("Loaded ArseFile:\n%v\n", af)
+	actionName := c.Args().Get(0)
+	if len(actionName) == 0 {
+		fmt.Println(`You need to specify an action to run.
+Usage:
+	arse [run|r] hello` + "\n")
+		return errors.New("action not specified")
+	}
+	fmt.Printf("\naction to run: %s\n", actionName)
+
+	action := af.Action(actionName)
+	if action == nil {
+		log.Fatalf("action not found: %s", actionName)
+	}
+	if err = action.Run(); err != nil {
+		log.Fatal("action running error:\n%v", err)
+	}
 	return nil
 }

@@ -87,7 +87,7 @@ Usage:
 		log.Fatalf("action not found: %s", actionName)
 	}
 	if err = action.Run(); err != nil {
-		log.Fatal("action running error:\n%v", err)
+		log.Fatalf("action running error:\n%v", err)
 	}
 	return nil
 }
